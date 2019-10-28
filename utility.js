@@ -9,5 +9,3 @@ const generateRandomString = function() {
 }
 
 module.exports = { generateRandomString }
-
-console.log(generateRandomString());
