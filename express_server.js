@@ -9,13 +9,6 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const routObject = {
-  "/": "Hello",
-  "/urls.json": urlDatabase,
-  "/hello": "<html><body>Hello <b>World</b></body></html>\n",
-
-}
-
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -25,6 +18,13 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", {
     urlDatabase: urlDatabase
   });
+});
+
+app.get('/urls/:shortURL', (req, res) => {
+  res.render("urls_show", {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL]
+  })
 });
 
 app.get("/hello", (req, res) => {
