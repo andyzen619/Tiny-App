@@ -1,0 +1,22 @@
+{
+  "name": "tiny-app",
+  "version": "1.0.0",
+  "description": "LHL W3 D1 Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andyzen619/Tiny-App.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andyzen619/Tiny-App/issues"
+  },
+  "homepage": "https://github.com/andyzen619/Tiny-App#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
