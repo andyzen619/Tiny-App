@@ -13,7 +13,7 @@ const urlDatabase = {
 };
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/urls");
 });
 
 app.get("/urls", (req, res) => {
@@ -32,7 +32,9 @@ app.post("/urls", (req, res) => {
   let shortUrl = utility.generateRandomString();
 
   if (!(Object.keys(urlDatabase).includes(shortUrl))) {
-    urlDatabase[shortUrl] = "http://" + req.body.longURL;
+    let longURL = req.body.longURL;
+
+    urlDatabase[shortUrl] = "https://" + longURL;
   }
   console.log(urlDatabase);
   res.redirect("/urls"); // Respond with 'Ok' (we will replace this)
@@ -51,6 +53,13 @@ app.get('/urls/:shortURL', (req, res) => {
     longURL: urlDatabase[req.params.shortURL]
   })
 });
+
+app.post('/urls/:shortURL/delete', (req, res) => {
+  const shortUrl = req.params.shortURL;
+  delete urlDatabase[shortUrl];
+  console.log(urlDatabase);
+  res.redirect('/urls');
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
