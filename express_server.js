@@ -32,8 +32,9 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  const user = req.cookies["user_id"];
   templateVars = {
-    email: req.cookies["email"],
+    user: userDatabase[user],
     urlDatabase: urlDatabase
   }
 
@@ -41,8 +42,9 @@ app.get("/urls", (req, res) => {
 });
 
 app.get('/urls/new', (req, res) => {
+  const user = req.cookies["user_id"];
   let templateVars = {
-    email: req.cookies["email"],
+    user: userDatabase[user]
   }
 
   res.render("urls_new", templateVars)
@@ -56,9 +58,9 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get('/urls/:shortURL', (req, res) => {
-
+  const user = req.cookies["user_id"];
   let templateVars = {
-    email: req.cookies["email"],
+    user: userDatabase[user],
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]
       // ... any other vars
@@ -67,10 +69,10 @@ app.get('/urls/:shortURL', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-
+  const user = req.cookies["user_id"];
   let templateVars = {
     //TODO: Pass in user database or fetch user from cookies
-    email: req.cookies["email"]
+    user: userDatabase[user]
   }
   res.render("user_register", templateVars);
 });
@@ -106,13 +108,17 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
 
-  res.cookie('email', email);
+  //TODO:get user_ID given email and password
+
+  //const userId =
+
+  //res.cookie('user_id', );
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
 
-  res.cookie('email', undefined);
+  res.cookie('user_id', undefined);
   res.redirect('/urls');
 })
 
