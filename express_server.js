@@ -5,13 +5,27 @@ const bodyParser = require("body-parser");
 const utility = require("./utility");
 const cookieParser = require("cookie-parser");
 
-app.set("view engine", "ejs");
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+const userDatabase = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+};
+
+app.set("view engine", "ejs");
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.redirect("/urls");
@@ -30,6 +44,7 @@ app.get('/urls/new', (req, res) => {
   let templateVars = {
     username: req.cookies["username"],
   }
+
   res.render("urls_new", templateVars)
 });
 
@@ -48,8 +63,16 @@ app.get('/urls/:shortURL', (req, res) => {
     longURL: urlDatabase[req.params.shortURL]
       // ... any other vars
   };
-
   res.render("urls_show", templateVars);
+});
+
+app.get('/register', (req, res) => {
+
+  let templateVars = {
+    //TODO: Pass in user database or fetch user from cookies
+    username: req.cookies["username"]
+  }
+  res.render("user_register", templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -61,6 +84,7 @@ app.post("/urls", (req, res) => {
 
     urlDatabase[shortUrl] = "https://" + longURL;
   }
+
   res.redirect("/urls"); // Respond with 'Ok' (we will replace this)
 });
 
@@ -86,14 +110,27 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
-//TODO: Logout post route
-
-
 app.post("/logout", (req, res) => {
 
   res.cookie('username', undefined);
   res.redirect('/urls');
 })
+
+app.post("/register", (req, res) => {
+  const email = req.body.registerEmail;
+  const password = req.body.registerPassword;
+  const account = {
+    id: utility.generateRandomID(userDatabase),
+    email: email,
+    passowrd: password
+  }
+
+  userDatabase[account.id] = account;
+
+  console.log(userDatabase);
+
+  res.redirect("/urls");
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

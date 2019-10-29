@@ -8,4 +8,14 @@ const generateRandomString = function() {
   return result;
 }
 
-module.exports = { generateRandomString }
+const generateRandomID = function(userDatabase) {
+
+  const numberOfUsers = Object.keys(userDatabase).length;
+
+  return generateRandomString().concat(numberOfUsers);
+}
+
+module.exports = {
+  generateRandomString,
+  generateRandomID
+}
