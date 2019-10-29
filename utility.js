@@ -15,7 +15,18 @@ const generateRandomID = function(userDatabase) {
   return generateRandomString().concat(numberOfUsers);
 }
 
+const isExistingUser = function(userDatabase, email) {
+  const users = Object.keys(userDatabase);
+  console.log(users);
+  for (user of users) {
+    if (userDatabase[user].email === email) {
+      return true;
+    }
+  }
+  return false;
+}
 module.exports = {
   generateRandomString,
-  generateRandomID
+  generateRandomID,
+  isExistingUser
 }

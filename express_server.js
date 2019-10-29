@@ -33,7 +33,7 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
   templateVars = {
-    username: req.cookies["username"],
+    email: req.cookies["email"],
     urlDatabase: urlDatabase
   }
 
@@ -42,7 +42,7 @@ app.get("/urls", (req, res) => {
 
 app.get('/urls/new', (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    email: req.cookies["email"],
   }
 
   res.render("urls_new", templateVars)
@@ -58,7 +58,7 @@ app.get("/u/:shortURL", (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
 
   let templateVars = {
-    username: req.cookies["username"],
+    email: req.cookies["email"],
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]
       // ... any other vars
@@ -70,7 +70,7 @@ app.get('/register', (req, res) => {
 
   let templateVars = {
     //TODO: Pass in user database or fetch user from cookies
-    username: req.cookies["username"]
+    email: req.cookies["email"]
   }
   res.render("user_register", templateVars);
 });
@@ -104,32 +104,41 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const username = req.body.username;
+  const email = req.body.email;
 
-  res.cookie('username', username);
+  res.cookie('email', email);
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
 
-  res.cookie('username', undefined);
+  res.cookie('email', undefined);
   res.redirect('/urls');
 })
 
 app.post("/register", (req, res) => {
   const email = req.body.registerEmail;
   const password = req.body.registerPassword;
-  const account = {
-    id: utility.generateRandomID(userDatabase),
-    email: email,
-    passowrd: password
+  console.log(email + " " + password);
+
+  if (email === "" || password === "") {
+    res.send("Please use valid email \n Status code: 400");
+  } else {
+
+    if (!utility.isExistingUser(userDatabase, email)) {
+      const account = {
+        id: utility.generateRandomID(userDatabase),
+        email: email,
+        passowrd: password
+      }
+      userDatabase[account.id] = account;
+
+      res.cookie('user_id', account.id);
+      res.redirect("/urls");
+    } else {
+      res.send("Email already exists. Status code: 400");
+    }
   }
-
-  userDatabase[account.id] = account;
-
-  console.log(userDatabase);
-
-  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {

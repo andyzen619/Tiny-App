@@ -11,15 +11,15 @@
             </div>
         </div>
 
-        <%if(username !== 'undefined'){%>
+        <%if(email !== 'undefined'){%>
             <form action="/logout" method="POST" class="form-inline">
-                <label style="margin-right: 1rem" class="badge badge-primary">Logged in as: <%=username%></label>
+                <label style="margin-right: 1rem" class="badge badge-primary">Logged in as: <%=email%></label>
                 <button type="submit" class="btn btn-outline-dark">Logout</button>
             </form>
 
             <%} else{%>
                 <form action="/login" method="POST" class="form-inline">
-                    <input type="text" class="form-control" name="username" placeholder="Username">
+                    <input type="text" class="form-control" name="email" placeholder="email">
                     <button type="submit" class="btn btn-primary">Login</button>
                 </form>
                 <%}%>
