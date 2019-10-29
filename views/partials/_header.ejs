@@ -11,18 +11,25 @@
             </div>
         </div>
 
-        <%console.log(user)%>
-            <%if(user !== undefined){%>
-                <form action="/logout" method="POST" class="form-inline">
-                    <label style="margin-right: 1rem" class="badge badge-primary">Logged in as: <%=user.email%></label>
-                    <button type="submit" class="btn btn-outline-dark">Logout</button>
-                </form>
 
-                <%} else{%>
-                    <form action="/login" method="POST" class="form-inline">
+        <%if(user !== undefined){%>
+            <form action="/logout" method="POST" class="form-inline">
+                <label style="margin-right: 1rem" class="badge badge-primary">Logged in as: <%=user.email%></label>
+                <button type="submit" class="btn btn-outline-dark">Logout</button>
+            </form>
+
+            <%} else{%>
+                <!-- <form action="/login" method="GET" class="form-inline">
                         <button type="submit" class="btn btn-primary">Login</button>
-                    </form>
-                    <%}%>
+                    </form> -->
+
+                <div class="navbar-nav">
+                    <a class="nav-item nav-link" href="/login">Login</a>
+                    <a class="nav-item nav-link" href="/register">Register</a>
+                </div>
+
+
+                <%}%>
 
     </nav>
 </header>

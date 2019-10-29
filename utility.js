@@ -17,7 +17,7 @@ const generateRandomID = function(userDatabase) {
 
 const isExistingUser = function(userDatabase, email) {
   const users = Object.keys(userDatabase);
-  console.log(users);
+
   for (user of users) {
     if (userDatabase[user].email === email) {
       return true;
@@ -25,8 +25,27 @@ const isExistingUser = function(userDatabase, email) {
   }
   return false;
 }
+
+const getExistingUser = function(userDatabase, email, password) {
+  if (!isExistingUser(userDatabase, email)) {
+    return 0;
+  }
+
+  const users = Object.keys(userDatabase);
+
+  for (user of users) {
+
+    if (userDatabase[user].email === email && userDatabase[user].password === password) {
+      return user;
+    }
+  }
+
+  console.log("incorrect password");
+  return 0;
+}
 module.exports = {
   generateRandomString,
   generateRandomID,
-  isExistingUser
+  isExistingUser,
+  getExistingUser
 }

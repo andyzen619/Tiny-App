@@ -71,14 +71,22 @@ app.get('/urls/:shortURL', (req, res) => {
 app.get('/register', (req, res) => {
   const user = req.cookies["user_id"];
   let templateVars = {
-    //TODO: Pass in user database or fetch user from cookies
+
     user: userDatabase[user]
   }
   res.render("user_register", templateVars);
 });
 
+app.get('/login', (req, res) => {
+  const user = req.cookies["user_id"];
+  let templateVars = {
+    user: userDatabase[user]
+  }
+
+  res.render('user_login', templateVars);
+});
+
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
   let shortUrl = utility.generateRandomString();
 
   if (!(Object.keys(urlDatabase).includes(shortUrl))) {
@@ -105,17 +113,6 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect("/urls");
 });
 
-app.post("/login", (req, res) => {
-  const email = req.body.email;
-
-  //TODO:get user_ID given email and password
-
-  //const userId =
-
-  //res.cookie('user_id', );
-  res.redirect("/urls");
-});
-
 app.post("/logout", (req, res) => {
 
   res.cookie('user_id', undefined);
@@ -125,7 +122,6 @@ app.post("/logout", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.registerEmail;
   const password = req.body.registerPassword;
-  console.log(email + " " + password);
 
   if (email === "" || password === "") {
     res.send("Please use valid email \n Status code: 400");
@@ -135,7 +131,7 @@ app.post("/register", (req, res) => {
       const account = {
         id: utility.generateRandomID(userDatabase),
         email: email,
-        passowrd: password
+        password: password
       }
       userDatabase[account.id] = account;
 
@@ -143,6 +139,33 @@ app.post("/register", (req, res) => {
       res.redirect("/urls");
     } else {
       res.send("Email already exists. Status code: 400");
+    }
+  }
+});
+
+app.post("/login", (req, res) => {
+  const email = req.body.loginEmail;
+  const password = req.body.loginPassword;
+
+  console.log(password);
+
+  if (email === "" || password === "") {
+    res.send("Please use valid email \n Status code: 400");
+  } else {
+    if (utility.isExistingUser(userDatabase, email)) {
+
+      const user_id = utility.getExistingUser(userDatabase, email, password);
+
+      if (user_id === 0) {
+        res.send("Incorrect username or password, please try again.");
+      } else {
+        const user = userDatabase[user_id];
+        res.cookie('user_id', user.id);
+        res.redirect("/urls");
+      }
+
+    } else {
+      res.send("User does not exist, please create an account.");
     }
   }
 });
