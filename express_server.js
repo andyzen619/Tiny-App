@@ -47,7 +47,13 @@ app.get('/urls/new', (req, res) => {
     user: userDatabase[user]
   }
 
-  res.render("urls_new", templateVars)
+  console.log(user);
+
+  if (user === 'undefined') {
+    res.redirect("/login");
+  } else {
+    res.render("urls_new", templateVars);
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
