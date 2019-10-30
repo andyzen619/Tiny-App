@@ -27,31 +27,44 @@ const isExistingUser = function(userDatabase, email) {
   return false;
 }
 
-const getExistingUser = function(userDatabase, email, password) {
+// const getExistingUser = function(userDatabase, email, password) {
 
-  console.log("Inputed password");
-  console.log(password);
-  console.log(userDatabase[user].password);
+//   console.log("Inputed password");
+//   console.log(password);
+//   console.log(userDatabase[user].password);
 
-  if (!isExistingUser(userDatabase, email)) {
-    return 0;
-  }
+//   if (!isExistingUser(userDatabase, email)) {
+//     return 0;
+//   }
 
-  const users = Object.keys(userDatabase);
+//   const users = Object.keys(userDatabase);
 
-  for (user of users) {
+//   for (user of users) {
 
-    const hashedUserPassword = bcrypt.compareSync(password, userDatabase[user].password);
+//     const hashedUserPassword = bcrypt.compareSync(password, userDatabase[user].password);
 
-    console.log(hashedUserPassword);
+//     console.log(hashedUserPassword);
 
-    if (userDatabase[user].email === email && hashedUserPassword) {
-      return user;
+//     if (userDatabase[user].email === email && hashedUserPassword) {
+//       return user;
+//     }
+//   }
+
+//   return 0;
+// }
+
+const getUserByEmail = function(userDatabase, email) {
+  let result;
+  Object.keys(userDatabase).forEach((key) => {
+    const userObject = userDatabase[key];
+
+    if (userObject.email === email) {
+      result = userObject;
     }
-  }
-
-  return 0;
+  });
+  return result;
 }
+
 
 /**
  * Returns a list of url objects that's userID matches the parameter userID
@@ -77,6 +90,6 @@ module.exports = {
   generateRandomString,
   generateRandomID,
   isExistingUser,
-  getExistingUser,
+  getUserByEmail,
   getUrlsForUser
 }

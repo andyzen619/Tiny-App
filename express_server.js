@@ -177,20 +177,16 @@ app.post("/login", (req, res) => {
     res.send("Please use valid email \n Status code: 400");
   } else {
     if (utility.isExistingUser(userDatabase, email)) {
-
-
-
-      //const user_id = utility.getExistingUser(userDatabase, email, password);
-
       let user_id = 0;
+      const userObject = utility.getUserByEmail(userDatabase, email);
 
-      Object.keys(userDatabase).forEach((key) => {
-        const userObject = userDatabase[key];
+      console.log(userObject);
 
-        if (userObject.email === email && bcrypt.compareSync(password, userObject.password)) {
-          user_id = userObject.id;
-        }
-      });
+
+      if (userObject && bcrypt.compareSync(password, userObject.password)) {
+        user_id = userObject.id;
+      }
+      console.log("user_id: " + user_id);
 
       if (user_id === 0) {
         res.send("Incorrect username or password, please try again.");
