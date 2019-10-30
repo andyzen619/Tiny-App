@@ -4,7 +4,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const utility = require("./utility");
 const cookieParser = require("cookie-parser");
-
+const bcrypt = require("bcrypt");
 const urlDatabase = {
   "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "as45ff1" },
   "9sm5xK": { longURL: "http://www.google.com", userID: "awerw12" }
@@ -140,6 +140,7 @@ app.post("/logout", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.registerEmail;
   const password = req.body.registerPassword;
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (email === "" || password === "") {
     res.send("Please use valid email \n Status code: 400");
@@ -149,10 +150,11 @@ app.post("/register", (req, res) => {
       const account = {
         id: utility.generateRandomID(userDatabase),
         email: email,
-        password: password
+        password: hashedPassword
       }
       userDatabase[account.id] = account;
 
+      console.log(userDatabase);
       res.cookie('user_id', account.id);
       res.redirect("/urls");
     } else {
@@ -170,14 +172,25 @@ app.post("/login", (req, res) => {
   } else {
     if (utility.isExistingUser(userDatabase, email)) {
 
-      const user_id = utility.getExistingUser(userDatabase, email, password);
+
+
+      //const user_id = utility.getExistingUser(userDatabase, email, password);
+
+      let user_id = 0;
+
+      Object.keys(userDatabase).forEach((key) => {
+        const userObject = userDatabase[key];
+
+        if (userObject.email === email && bcrypt.compareSync(password, userObject.password)) {
+          user_id = userObject.id;
+        }
+      });
 
       if (user_id === 0) {
         res.send("Incorrect username or password, please try again.");
       } else {
         const user = userDatabase[user_id];
         res.cookie('user_id', user.id);
-        console.log(urlDatabase);
         res.redirect("/urls");
       }
 

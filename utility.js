@@ -1,4 +1,5 @@
 const alphanumeric = "abcdefghijklmnopqrstuvwxyz1234567890";
+const bcrypt = require("bcrypt");
 
 const generateRandomString = function() {
   let result = "";
@@ -27,6 +28,11 @@ const isExistingUser = function(userDatabase, email) {
 }
 
 const getExistingUser = function(userDatabase, email, password) {
+
+  console.log("Inputed password");
+  console.log(password);
+  console.log(userDatabase[user].password);
+
   if (!isExistingUser(userDatabase, email)) {
     return 0;
   }
@@ -35,7 +41,11 @@ const getExistingUser = function(userDatabase, email, password) {
 
   for (user of users) {
 
-    if (userDatabase[user].email === email && userDatabase[user].password === password) {
+    const hashedUserPassword = bcrypt.compareSync(password, userDatabase[user].password);
+
+    console.log(hashedUserPassword);
+
+    if (userDatabase[user].email === email && hashedUserPassword) {
       return user;
     }
   }
