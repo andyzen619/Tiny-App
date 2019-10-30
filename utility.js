@@ -27,32 +27,11 @@ const isExistingUser = function(userDatabase, email) {
   return false;
 }
 
-// const getExistingUser = function(userDatabase, email, password) {
-
-//   console.log("Inputed password");
-//   console.log(password);
-//   console.log(userDatabase[user].password);
-
-//   if (!isExistingUser(userDatabase, email)) {
-//     return 0;
-//   }
-
-//   const users = Object.keys(userDatabase);
-
-//   for (user of users) {
-
-//     const hashedUserPassword = bcrypt.compareSync(password, userDatabase[user].password);
-
-//     console.log(hashedUserPassword);
-
-//     if (userDatabase[user].email === email && hashedUserPassword) {
-//       return user;
-//     }
-//   }
-
-//   return 0;
-// }
-
+/**
+ * Returns the user object according to email
+ * @param {*} userDatabase 
+ * @param {*} email 
+ */
 const getUserByEmail = function(userDatabase, email) {
   let result;
   Object.keys(userDatabase).forEach((key) => {

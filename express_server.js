@@ -3,7 +3,6 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const utility = require("./utility");
-//const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcrypt");
 const urlDatabase = {
@@ -161,7 +160,6 @@ app.post("/register", (req, res) => {
       userDatabase[account.id] = account;
 
       req.session.user_id = account.id;
-      //res.cookie('user_id', account.id);
       res.redirect("/urls");
     } else {
       res.send("Email already exists. Status code: 400");
@@ -180,13 +178,9 @@ app.post("/login", (req, res) => {
       let user_id = 0;
       const userObject = utility.getUserByEmail(userDatabase, email);
 
-      console.log(userObject);
-
-
       if (userObject && bcrypt.compareSync(password, userObject.password)) {
         user_id = userObject.id;
       }
-      console.log("user_id: " + user_id);
 
       if (user_id === 0) {
         res.send("Incorrect username or password, please try again.");
