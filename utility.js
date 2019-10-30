@@ -40,12 +40,33 @@ const getExistingUser = function(userDatabase, email, password) {
     }
   }
 
-  console.log("incorrect password");
   return 0;
+}
+
+/**
+ * Returns a list of url objects that's userID matches the parameter userID
+ * @param {} id 
+ * @param {*} urlDatabase 
+ */
+const getUrlsForUser = function(id, urlDatabase) {
+  //Loop through url object in url database
+  //Match id with object.id
+  //If match: appaned object to result list.
+
+  let userURLsObject = {};
+  Object.keys(urlDatabase).forEach((key) => {
+    let urlObject = urlDatabase[key];
+
+    if (urlObject.userID === id) {
+      userURLsObject[key] = urlObject.longURL;
+    }
+  });
+  return userURLsObject;
 }
 module.exports = {
   generateRandomString,
   generateRandomID,
   isExistingUser,
-  getExistingUser
+  getExistingUser,
+  getUrlsForUser
 }

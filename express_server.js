@@ -6,18 +6,18 @@ const utility = require("./utility");
 const cookieParser = require("cookie-parser");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "as45ff1" },
+  "9sm5xK": { longURL: "http://www.google.com", userID: "awerw12" }
 };
 
 const userDatabase = {
-  "userRandomID": {
-    id: "userRandomID",
+  "as45ff1": {
+    id: "as45ff1",
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
-  "user2RandomID": {
-    id: "user2RandomID",
+  "awerw12": {
+    id: "awerw12",
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
@@ -35,7 +35,7 @@ app.get("/urls", (req, res) => {
   const user = req.cookies["user_id"];
   templateVars = {
     user: userDatabase[user],
-    urlDatabase: urlDatabase
+    urlDatabase: utility.getUrlsForUser(user, urlDatabase)
   }
 
   res.render("urls_index", templateVars);
@@ -46,8 +46,6 @@ app.get('/urls/new', (req, res) => {
   let templateVars = {
     user: userDatabase[user]
   }
-
-  console.log(user);
 
   if (user === 'undefined') {
     res.redirect("/login");
@@ -152,8 +150,6 @@ app.post("/register", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.loginEmail;
   const password = req.body.loginPassword;
-
-  console.log(password);
 
   if (email === "" || password === "") {
     res.send("Please use valid email \n Status code: 400");
