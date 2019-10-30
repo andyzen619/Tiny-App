@@ -56,17 +56,20 @@ app.get('/urls/new', (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
+  const urlObject = urlDatabase[shortURL];
+  const longURL = urlObject.longURL;
 
   res.redirect(longURL);
 });
 
 app.get('/urls/:shortURL', (req, res) => {
   const user = req.cookies["user_id"];
+  const shortURL = req.params.shortURL;
+  const urlObject = urlDatabase[shortURL];
   let templateVars = {
     user: userDatabase[user],
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]
+    shortURL: shortURL,
+    longURL: urlObject.longURL
       // ... any other vars
   };
   res.render("urls_show", templateVars);
@@ -90,29 +93,40 @@ app.get('/login', (req, res) => {
   res.render('user_login', templateVars);
 });
 
+//Creating new Tiny URLS
 app.post("/urls", (req, res) => {
   let shortUrl = utility.generateRandomString();
+  const userID = req.cookies["user_id"];
+  let urlObject = {};
+  let longURL = req.body.longURL;
+
+  urlObject.longURL = "https://" + longURL;
+  urlObject.userID = userID;
 
   if (!(Object.keys(urlDatabase).includes(shortUrl))) {
-    let longURL = req.body.longURL;
-
-    urlDatabase[shortUrl] = "https://" + longURL;
+    urlDatabase[shortUrl] = urlObject;
   }
-
   res.redirect("/urls"); // Respond with 'Ok' (we will replace this)
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
   const shortUrl = req.params.shortURL;
-  delete urlDatabase[shortUrl];
+  const userID = req.cookies["user_id"];
+  const urlObject = urlDatabase[shortUrl];
 
+  if (urlObject.userID === userID) {
+    delete urlDatabase[shortUrl];
+  }
   res.redirect('/urls');
 })
 
 app.post("/urls/:shortURL", (req, res) => {
   const shortUrl = req.params.shortURL;
-  if (urlDatabase[shortUrl] !== null) {
-    urlDatabase[shortUrl] = req.body.updatedLongURL;
+  const userID = req.cookies["user_id"];
+  const urlObject = urlDatabase[shortUrl];
+
+  if (urlObject.userID === userID) {
+    urlDatabase[shortUrl].longURL = req.body.updatedLongURL;
   }
   res.redirect("/urls");
 });
@@ -163,6 +177,7 @@ app.post("/login", (req, res) => {
       } else {
         const user = userDatabase[user_id];
         res.cookie('user_id', user.id);
+        console.log(urlDatabase);
         res.redirect("/urls");
       }
 
