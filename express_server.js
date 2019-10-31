@@ -1,34 +1,20 @@
 const express = require("express");
-const app = express();
-const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const utility = require("./utility");
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcrypt");
-const urlDatabase = {
-  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "as45ff1" },
-  "9sm5xK": { longURL: "http://www.google.com", userID: "awerw12" }
-};
 
-const userDatabase = {
-  "as45ff1": {
-    id: "as45ff1",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
-  },
-  "awerw12": {
-    id: "awerw12",
-    email: "user2@example.com",
-    password: "dishwasher-funk"
-  }
-};
+const PORT = 8080; // default port 8080
+const app = express();
+const data = require("./data");
+const userDatabase = data.userDatabase;
+const urlDatabase = data.urlDatabase;
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2'],
-
 }));
 
 app.use('/urls', (req, res, next) => {

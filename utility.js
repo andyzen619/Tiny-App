@@ -1,16 +1,23 @@
 const alphanumeric = "abcdefghijklmnopqrstuvwxyz1234567890";
 const bcrypt = require("bcrypt");
 
+/**
+ * Returns a random string to be used for unique short URLS
+ */
 const generateRandomString = function() {
   let result = "";
+
   for (let i = 0; i < 6; i++) {
     result = result.concat(alphanumeric[Math.floor(Math.random() * alphanumeric.length)]);
   }
   return result;
 }
 
+/**
+ * Generates a random ID for user object.
+ * @param {*} userDatabase determines the userID
+ */
 const generateRandomID = function(userDatabase) {
-
   const numberOfUsers = Object.keys(userDatabase).length;
 
   return generateRandomString().concat(numberOfUsers);
@@ -73,11 +80,13 @@ const getUrlsForUser = function(id, urlDatabase) {
  */
 const checkUser = function(userDatabase, user_id) {
   const users = Object.keys(userDatabase);
+
   if (!users.includes(user_id)) {
     return false;
   }
   return true;
 }
+
 module.exports = {
   generateRandomString,
   generateRandomID,
