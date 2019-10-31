@@ -32,18 +32,27 @@ app.use(cookieSession({
 }));
 
 app.get("/", (req, res) => {
-  res.redirect("/urls");
+  const user_id = req.session.user_id;
+  if (user_id) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/urls", (req, res) => {
-  //const user = req.cookies["user_id"];
-  const user = req.session.user_id;
-  templateVars = {
-    user: userDatabase[user],
-    urlDatabase: utility.getUrlsForUser(user, urlDatabase)
-  }
+  const user_id = req.session.user_id;
+  const user = userDatabase[user_id];
+  if (user) {
+    templateVars = {
+      user: user,
+      urlDatabase: utility.getUrlsForUser(user.id, urlDatabase)
+    }
+    res.render("urls_index", templateVars);
 
-  res.render("urls_index", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get('/urls/new', (req, res) => {
@@ -52,7 +61,8 @@ app.get('/urls/new', (req, res) => {
     user: userDatabase[user]
   }
 
-  if (user === 'undefined') {
+  console.log(user);
+  if (user === undefined) {
     res.redirect("/login");
   } else {
     res.render("urls_new", templateVars);
@@ -62,22 +72,41 @@ app.get('/urls/new', (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const urlObject = urlDatabase[shortURL];
-  const longURL = urlObject.longURL;
 
-  res.redirect(longURL);
+  if (urlObject) {
+    const longURL = urlObject.longURL;
+    res.redirect(longURL);
+  } else {
+    res.send("Error: URL does not exist");
+  }
 });
 
 app.get('/urls/:shortURL', (req, res) => {
   const user = req.session["user_id"];
   const shortURL = req.params.shortURL;
   const urlObject = urlDatabase[shortURL];
-  let templateVars = {
-    user: userDatabase[user],
-    shortURL: shortURL,
-    longURL: urlObject.longURL
-      // ... any other vars
-  };
-  res.render("urls_show", templateVars);
+
+  //Checks whether or not user is logged in, before going to url page.
+  if (!user) {
+    res.send("Error: Login required");
+  } else {
+    if (urlObject) {
+
+      if (urlObject.user_ID === user) {
+        let templateVars = {
+          user: userDatabase[user],
+          shortURL: shortURL,
+          longURL: urlObject.longURL
+        };
+
+        res.render("urls_show", templateVars);
+      } else {
+        res.send("Error: URL does not belong to you");
+      }
+    } else {
+      res.send("Error: short URL does not exist");
+    }
+  }
 });
 
 app.get('/register', (req, res) => {
@@ -101,17 +130,22 @@ app.get('/login', (req, res) => {
 //Creating new Tiny URLS
 app.post("/urls", (req, res) => {
   let shortUrl = utility.generateRandomString();
-  const userID = req.session["user_id"];
-  let urlObject = {};
-  let longURL = req.body.longURL;
+  const user_id = req.session["user_id"];
 
-  urlObject.longURL = "https://" + longURL;
-  urlObject.userID = userID;
+  if (user_id) {
+    let urlObject = {};
+    let longURL = req.body.longURL;
 
-  if (!(Object.keys(urlDatabase).includes(shortUrl))) {
-    urlDatabase[shortUrl] = urlObject;
+    urlObject.longURL = "https://" + longURL;
+    urlObject.userID = user_id;
+
+    if (!(Object.keys(urlDatabase).includes(shortUrl))) {
+      urlDatabase[shortUrl] = urlObject;
+    }
+    res.redirect("/urls"); // Respond with 'Ok' (we will replace this)
+  } else {
+    res.send("Error: Please login");
   }
-  res.redirect("/urls"); // Respond with 'Ok' (we will replace this)
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
@@ -127,19 +161,25 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 app.post("/urls/:shortURL", (req, res) => {
   const shortUrl = req.params.shortURL;
-  const userID = req.session["user_id"];
+  const user_id = req.session["user_id"];
   const urlObject = urlDatabase[shortUrl];
 
-  if (urlObject.userID === userID) {
-    urlDatabase[shortUrl].longURL = req.body.updatedLongURL;
+  if (user_id) {
+    if (urlObject.userID === user_id) {
+      urlDatabase[shortUrl].longURL = "https://" + req.body.updatedLongURL;
+      res.redirect("/urls");
+    } else {
+      res.send("Error: URL does not belong to you, please log in.");
+    }
+  } else {
+    res.send("Error: Log in required");
   }
-  res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
 
   req.session['user_id'] = undefined;
-  res.redirect('/urls');
+  res.redirect('/');
 })
 
 app.post("/register", (req, res) => {
