@@ -45,10 +45,11 @@ app.get("/urls", (req, res) => {
   const userId = req.session.userId;
   const user = userDatabase[userId];
   if (user) {
-    templateVars = {
+    const templateVars = {
       user: user,
       urlDatabase: utility.getUrlsForUser(user.id, urlDatabase)
-    }
+    };
+
     res.render("urls_index", templateVars);
 
   } else {
@@ -61,7 +62,7 @@ app.get('/urls/new', (req, res) => {
   const user = req.session["userId"];
   let templateVars = {
     user: userDatabase[user]
-  }
+  };
 
   if (user === undefined) {
     res.redirect("/login");
@@ -118,7 +119,8 @@ app.get('/register', (req, res) => {
   let templateVars = {
 
     user: userDatabase[user]
-  }
+  };
+
   res.render("user_register", templateVars);
 });
 
@@ -127,7 +129,7 @@ app.get('/login', (req, res) => {
   const user = req.session["userId"];
   let templateVars = {
     user: userDatabase[user]
-  }
+  };
 
   res.render('user_login', templateVars);
 });
@@ -169,7 +171,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   } else {
     res.send("Error: URL does not belong to you");
   }
-})
+});
 
 //Updates URL objects
 app.post("/urls/:shortURL", (req, res) => {
@@ -195,7 +197,7 @@ app.post("/logout", (req, res) => {
 
   req.session['userId'] = undefined;
   res.redirect('/');
-})
+});
 
 //registers user
 app.post("/register", (req, res) => {
@@ -213,9 +215,9 @@ app.post("/register", (req, res) => {
         id: utility.generateRandomID(userDatabase),
         email: email,
         password: hashedPassword
-      }
-      userDatabase[account.id] = account;
+      };
 
+      userDatabase[account.id] = account;
       req.session.userId = account.id;
       res.redirect("/urls");
     } else {

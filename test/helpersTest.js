@@ -2,6 +2,7 @@ const { assert } = require('chai');
 
 const utility = require('../utility.js');
 
+//Test Database
 const testUsers = {
   "userRandomID": {
     id: "userRandomID",
@@ -31,5 +32,5 @@ describe('getUserByEmail', function() {
     const expectedOutput = undefined;
 
     assert.equal(input, expectedOutput);
-  })
+  });
 });

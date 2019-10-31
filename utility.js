@@ -1,6 +1,5 @@
 //Aids in generating random string
 const alphanumeric = "abcdefghijklmnopqrstuvwxyz1234567890";
-const bcrypt = require("bcrypt");
 
 /**
  * Returns a random string to be used for unique short URLS
@@ -12,7 +11,7 @@ const generateRandomString = function() {
     result = result.concat(alphanumeric[Math.floor(Math.random() * alphanumeric.length)]);
   }
   return result;
-}
+};
 
 /**
  * Generates a random ID for user object.
@@ -22,23 +21,23 @@ const generateRandomID = function(userDatabase) {
   const numberOfUsers = Object.keys(userDatabase).length;
 
   return generateRandomString().concat(numberOfUsers);
-}
+};
 
 const isExistingUser = function(userDatabase, email) {
   const users = Object.keys(userDatabase);
 
-  for (user of users) {
+  for (let user of users) {
     if (userDatabase[user].email === email) {
       return true;
     }
   }
   return false;
-}
+};
 
 /**
  * Returns the user object according to email
- * @param {*} userDatabase 
- * @param {*} email 
+ * @param {*} userDatabase
+ * @param {*} email
  */
 const getUserByEmail = function(userDatabase, email) {
   let result;
@@ -50,13 +49,13 @@ const getUserByEmail = function(userDatabase, email) {
     }
   });
   return result;
-}
+};
 
 
 /**
  * Returns a list of url objects that's userID matches the parameter userID
- * @param {} id 
- * @param {*} urlDatabase 
+ * @param {} id
+ * @param {*} urlDatabase
  */
 const getUrlsForUser = function(id, urlDatabase) {
   //Loop through url object in url database
@@ -65,7 +64,6 @@ const getUrlsForUser = function(id, urlDatabase) {
 
   let userURLsObject = {};
 
-  //returns 
   Object.keys(urlDatabase).forEach((key) => {
     let urlObject = urlDatabase[key];
 
@@ -74,21 +72,21 @@ const getUrlsForUser = function(id, urlDatabase) {
     }
   });
   return userURLsObject;
-}
+};
 
 /**
- * Returns true if user_id exists in userDatabase.
- * @param {*} userDatabase 
- * @param {*} user_id 
+ * Returns true if userId exists in userDatabase.
+ * @param {*} userDatabase
+ * @param {*} userId
  */
-const checkUser = function(userDatabase, user_id) {
+const checkUser = function(userDatabase, userId) {
   const users = Object.keys(userDatabase);
 
-  if (!users.includes(user_id)) {
+  if (!users.includes(userId)) {
     return false;
   }
   return true;
-}
+};
 
 module.exports = {
   generateRandomString,
@@ -97,4 +95,4 @@ module.exports = {
   getUserByEmail,
   getUrlsForUser,
   checkUser
-}
+};
