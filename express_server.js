@@ -10,6 +10,7 @@ const data = require("./data");
 const userDatabase = data.userDatabase;
 const urlDatabase = data.urlDatabase;
 
+//Sets all middleware-----------------------------------------------------
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieSession({
@@ -17,27 +18,32 @@ app.use(cookieSession({
   keys: ['key1', 'key2'],
 }));
 
+//Redirects non registered users to log in page
 app.use('/urls', (req, res, next) => {
-  const user_id = req.session.user_id;
-  if (!user_id || !utility.checkUser(userDatabase, user_id)) {
+  const userId = req.session.userId;
+  if (!userId || !utility.checkUser(userDatabase, userId)) {
     res.redirect("/login");
   } else {
     next();
   }
 });
 
+
+//Get methods-------------------------------------------------------------
+//Redirects to login if not logged in and urls if other wise
 app.get("/", (req, res) => {
-  const user_id = req.session.user_id;
-  if (user_id) {
+  const userId = req.session.userId;
+  if (userId) {
     res.redirect("/urls");
   } else {
     res.redirect("/login");
   }
 });
 
+//Shows user url's if logged, login page otherwise
 app.get("/urls", (req, res) => {
-  const user_id = req.session.user_id;
-  const user = userDatabase[user_id];
+  const userId = req.session.userId;
+  const user = userDatabase[userId];
   if (user) {
     templateVars = {
       user: user,
@@ -50,8 +56,9 @@ app.get("/urls", (req, res) => {
   }
 });
 
+//Creates url page if logged in, login page if other wise
 app.get('/urls/new', (req, res) => {
-  const user = req.session["user_id"];
+  const user = req.session["userId"];
   let templateVars = {
     user: userDatabase[user]
   }
@@ -63,6 +70,7 @@ app.get('/urls/new', (req, res) => {
   }
 });
 
+//Redirects to actual url when give short URL
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const urlObject = urlDatabase[shortURL];
@@ -75,8 +83,9 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
+//Directs to URL page if correct user, error message if otherwise
 app.get('/urls/:shortURL', (req, res) => {
-  const user = req.session["user_id"];
+  const user = req.session["userId"];
   const shortURL = req.params.shortURL;
   const urlObject = urlDatabase[shortURL];
 
@@ -85,9 +94,7 @@ app.get('/urls/:shortURL', (req, res) => {
     res.send("Error: Login required");
   } else {
     if (urlObject) {
-
-      console.log("Debug");
-
+      //Checks url belongs to current user
       if (urlObject.userID === user) {
         let templateVars = {
           user: userDatabase[user],
@@ -105,8 +112,9 @@ app.get('/urls/:shortURL', (req, res) => {
   }
 });
 
+//Directs to register user
 app.get('/register', (req, res) => {
-  const user = req.session.user_id;
+  const user = req.session.userId;
   let templateVars = {
 
     user: userDatabase[user]
@@ -114,8 +122,9 @@ app.get('/register', (req, res) => {
   res.render("user_register", templateVars);
 });
 
+//Directs to login user
 app.get('/login', (req, res) => {
-  const user = req.session["user_id"];
+  const user = req.session["userId"];
   let templateVars = {
     user: userDatabase[user]
   }
@@ -123,18 +132,21 @@ app.get('/login', (req, res) => {
   res.render('user_login', templateVars);
 });
 
+//Post methods-----------------------------------------------------------------
 //Creating new Tiny URLS
 app.post("/urls", (req, res) => {
   let shortUrl = utility.generateRandomString();
-  const user_id = req.session["user_id"];
+  const userId = req.session["userId"];
 
-  if (user_id) {
+  if (userId) {
     let urlObject = {};
     let longURL = req.body.longURL;
 
+    //Collect the correct data for the data object
     urlObject.longURL = "https://" + longURL;
-    urlObject.userID = user_id;
+    urlObject.userID = userId;
 
+    //Adds urlObject if it does not exists in database
     if (!(Object.keys(urlDatabase).includes(shortUrl))) {
       urlDatabase[shortUrl] = urlObject;
     }
@@ -144,11 +156,13 @@ app.post("/urls", (req, res) => {
   }
 });
 
+//Deletes URL
 app.post('/urls/:shortURL/delete', (req, res) => {
   const shortUrl = req.params.shortURL;
-  const userID = req.session["user_id"];
+  const userID = req.session["userId"];
   const urlObject = urlDatabase[shortUrl];
 
+  //Checks if URL object belongs to current user
   if (urlObject.userID === userID) {
     delete urlDatabase[shortUrl];
     res.redirect('/urls');
@@ -157,13 +171,15 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   }
 })
 
+//Updates URL objects
 app.post("/urls/:shortURL", (req, res) => {
   const shortUrl = req.params.shortURL;
-  const user_id = req.session["user_id"];
+  const userId = req.session["userId"];
   const urlObject = urlDatabase[shortUrl];
 
-  if (user_id) {
-    if (urlObject.userID === user_id) {
+  //Validates current user before updating url object
+  if (userId) {
+    if (urlObject.userID === userId) {
       urlDatabase[shortUrl].longURL = "https://" + req.body.updatedLongURL;
       res.redirect("/urls");
     } else {
@@ -174,17 +190,20 @@ app.post("/urls/:shortURL", (req, res) => {
   }
 });
 
+//Logs out user
 app.post("/logout", (req, res) => {
 
-  req.session['user_id'] = undefined;
+  req.session['userId'] = undefined;
   res.redirect('/');
 })
 
+//registers user
 app.post("/register", (req, res) => {
   const email = req.body.registerEmail;
   const password = req.body.registerPassword;
   const hashedPassword = bcrypt.hashSync(password, 10);
 
+  //Checks input format
   if (email === "" || password === "") {
     res.send("Please use valid email \n Status code: 400");
   } else {
@@ -197,7 +216,7 @@ app.post("/register", (req, res) => {
       }
       userDatabase[account.id] = account;
 
-      req.session.user_id = account.id;
+      req.session.userId = account.id;
       res.redirect("/urls");
     } else {
       res.send("Email already exists. Status code: 400");
@@ -205,26 +224,31 @@ app.post("/register", (req, res) => {
   }
 });
 
+//Authenticates user
 app.post("/login", (req, res) => {
   const email = req.body.loginEmail;
   const password = req.body.loginPassword;
 
+  //Checks input format
   if (email === "" || password === "") {
     res.send("Please use valid email \n Status code: 400");
   } else {
+    //Checks for existing user
     if (utility.isExistingUser(userDatabase, email)) {
-      let user_id = 0;
+      let userId = 0;
       const userObject = utility.getUserByEmail(userDatabase, email);
 
+      //obtain user object if password validates
       if (userObject && bcrypt.compareSync(password, userObject.password)) {
-        user_id = userObject.id;
+        userId = userObject.id;
       }
 
-      if (user_id === 0) {
+      //Give errors message password does not validate
+      if (userId === 0) {
         res.send("Incorrect username or password, please try again.");
       } else {
-        const user = userDatabase[user_id];
-        req.session['user_id'] = user.id;
+        const user = userDatabase[userId];
+        req.session['userId'] = user.id;
         res.redirect("/urls");
       }
 
