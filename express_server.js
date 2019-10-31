@@ -164,12 +164,15 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   const userID = req.session["userId"];
   const urlObject = urlDatabase[shortUrl];
 
-  //Checks if URL object belongs to current user
-  if (urlObject.userID === userID) {
-    delete urlDatabase[shortUrl];
-    res.redirect('/urls');
+  if (urlObject) {
+    if (urlObject && urlObject.userID === userID) {
+      delete urlDatabase[shortUrl];
+      res.redirect('/urls');
+    } else {
+      res.send("Error: URL does not belong to you");
+    }
   } else {
-    res.send("Error: URL does not belong to you");
+    res.send("Error: URL does not exist");
   }
 });
 
