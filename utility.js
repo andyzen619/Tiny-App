@@ -65,10 +65,24 @@ const getUrlsForUser = function(id, urlDatabase) {
   });
   return userURLsObject;
 }
+
+/**
+ * Returns true if user_id exists in userDatabase.
+ * @param {*} userDatabase 
+ * @param {*} user_id 
+ */
+const checkUser = function(userDatabase, user_id) {
+  const users = Object.keys(userDatabase);
+  if (!users.includes(user_id)) {
+    return false;
+  }
+  return true;
+}
 module.exports = {
   generateRandomString,
   generateRandomID,
   isExistingUser,
   getUserByEmail,
-  getUrlsForUser
+  getUrlsForUser,
+  checkUser
 }

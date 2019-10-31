@@ -31,6 +31,15 @@ app.use(cookieSession({
 
 }));
 
+app.use('/urls', (req, res, next) => {
+  const user_id = req.session.user_id;
+  if (!user_id || !utility.checkUser(userDatabase, user_id)) {
+    res.redirect("/login");
+  } else {
+    next();
+  }
+});
+
 app.get("/", (req, res) => {
   const user_id = req.session.user_id;
   if (user_id) {
