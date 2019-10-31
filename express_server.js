@@ -61,7 +61,6 @@ app.get('/urls/new', (req, res) => {
     user: userDatabase[user]
   }
 
-  console.log(user);
   if (user === undefined) {
     res.redirect("/login");
   } else {
@@ -92,7 +91,9 @@ app.get('/urls/:shortURL', (req, res) => {
   } else {
     if (urlObject) {
 
-      if (urlObject.user_ID === user) {
+      console.log("Debug");
+
+      if (urlObject.userID === user) {
         let templateVars = {
           user: userDatabase[user],
           shortURL: shortURL,
@@ -163,6 +164,10 @@ app.post("/urls/:shortURL", (req, res) => {
   const shortUrl = req.params.shortURL;
   const user_id = req.session["user_id"];
   const urlObject = urlDatabase[shortUrl];
+
+  console.log(urlObject.userID);
+  console.log(userDatabase);
+  console.log(user_id);
 
   if (user_id) {
     if (urlObject.userID === user_id) {
