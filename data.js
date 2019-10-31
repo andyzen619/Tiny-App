@@ -1,8 +1,10 @@
+//Stores url's
 const urlDatabase = {
   "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "as45ff1" },
   "9sm5xK": { longURL: "http://www.google.com", userID: "awerw12" }
 };
 
+//Stores user's
 const userDatabase = {
   "as45ff1": {
     id: "as45ff1",

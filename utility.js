@@ -1,3 +1,4 @@
+//Aids in generating random string
 const alphanumeric = "abcdefghijklmnopqrstuvwxyz1234567890";
 const bcrypt = require("bcrypt");
 
@@ -63,6 +64,8 @@ const getUrlsForUser = function(id, urlDatabase) {
   //If match: appaned object to result list.
 
   let userURLsObject = {};
+
+  //returns 
   Object.keys(urlDatabase).forEach((key) => {
     let urlObject = urlDatabase[key];
 
