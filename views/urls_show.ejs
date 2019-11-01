@@ -23,16 +23,28 @@
                     <%= shortURL %>
                 </a>
             </p>
-        </div>
-        <form action="/urls/<%=shortURL%>" method="POST">
-            <div class="card-body">
-                <h2 class="card-title">Edit</h5>
-                    <p class="card-text">
-                        New URL: <input type="text" name="updatedLongURL">
-                        <button type="submit" class="btn btn-primary">Edit</button>
-                    </p>
+            <div>
+                <img src="https://img.icons8.com/officel/40/000000/mouse-left-click.png">
             </div>
-        </form>
+            <div style="margin: 1rem">
+                <h4><span class="badge badge-primary"><%=visits%></span></h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="card text-center">
+        <div class="card-header"></div>
+        <div class="card-body">
+            <form action="/urls/<%=shortURL%>" method="POST">
+                <div class="card-body">
+                    <h2 class="card-title">Edit</h5>
+                        <p class="card-text">
+                            New URL: <input type="text" name="updatedLongURL">
+                            <button type="submit" class="btn btn-primary">Edit</button>
+                        </p>
+                </div>
+            </form>
+        </div>
         <div class="card-footer text-muted"></div>
     </div>
     <!-- Bootstrap JS -->

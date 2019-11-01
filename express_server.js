@@ -78,6 +78,8 @@ app.get("/u/:shortURL", (req, res) => {
 
   if (urlObject) {
     const longURL = urlObject.longURL;
+    urlObject.visits = urlObject.visits + 1;
+    console.log(urlObject);
     res.redirect(longURL);
   } else {
     res.send("Error: URL does not exist");
@@ -100,7 +102,8 @@ app.get('/urls/:shortURL', (req, res) => {
         let templateVars = {
           user: userDatabase[user],
           shortURL: shortURL,
-          longURL: urlObject.longURL
+          longURL: urlObject.longURL,
+          visits: urlObject.visits
         };
 
         res.render("urls_show", templateVars);
@@ -147,6 +150,7 @@ app.post("/urls", (req, res) => {
     //Collect the correct data for the data object
     urlObject.longURL = "https://" + longURL;
     urlObject.userID = userId;
+    urlObject.visits = 0;
 
     //Adds urlObject if it does not exists in database
     if (!(Object.keys(urlDatabase).includes(shortUrl))) {
