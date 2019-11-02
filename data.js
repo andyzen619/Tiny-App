@@ -4,11 +4,13 @@ const urlDatabase = {
     longURL: "http://www.lighthouselabs.ca",
     userID: "as45ff1",
     visits: 0,
+    uniqueUserVisits: 0
   },
   "9sm5xK": {
     longURL: "http://www.google.com",
     userID: "awerw12",
-    visits: 0
+    visits: 0,
+    uniqueUserVisits: 0
   }
 };
 
