@@ -3,7 +3,7 @@ const urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
     userID: "as45ff1",
-    visits: 0
+    visits: 0,
   },
   "9sm5xK": {
     longURL: "http://www.google.com",
