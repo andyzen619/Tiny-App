@@ -75,11 +75,25 @@ app.get('/urls/new', (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const urlObject = urlDatabase[shortURL];
+  const session = req.session;
+  const user = session["userId"];
+  const uniqueUserVisitsArray = session[shortURL];
 
   if (urlObject) {
     const longURL = urlObject.longURL;
+
+    //Adds current user to unique visitors cookie
+    //TODO:
+
+    if (!uniqueUserVisitsArray.includes(user)) {
+      console.log(`Adding unique visitor to  ${shortURL}`);
+      uniqueUserVisitsArray.push(user);
+    }
+    console.log(session);
+
+    //Increments visits counter by 1
     urlObject.visits = urlObject.visits + 1;
-    console.log(urlObject);
+
     res.redirect(longURL);
   } else {
     res.send("Error: URL does not exist");
@@ -141,7 +155,8 @@ app.get('/login', (req, res) => {
 //Creating new Tiny URLS
 app.post("/urls", (req, res) => {
   let shortUrl = utility.generateRandomString();
-  const userId = req.session["userId"];
+  const session = req.session;
+  const userId = session["userId"];
 
   if (userId) {
     let urlObject = {};
@@ -151,6 +166,11 @@ app.post("/urls", (req, res) => {
     urlObject.longURL = "https://" + longURL;
     urlObject.userID = userId;
     urlObject.visits = 0;
+
+    //Initializes url cookie to keep track of unique visitors
+    session[shortUrl] = [];
+
+    console.log(session);
 
     //Adds urlObject if it does not exists in database
     if (!(Object.keys(urlDatabase).includes(shortUrl))) {
@@ -217,6 +237,7 @@ app.post("/register", (req, res) => {
     res.send("Please use valid email \n Status code: 400");
   } else {
 
+    //Adds new user to database
     if (!utility.isExistingUser(userDatabase, email)) {
       const account = {
         id: utility.generateRandomID(userDatabase),
@@ -228,7 +249,7 @@ app.post("/register", (req, res) => {
       req.session.userId = account.id;
       res.redirect("/urls");
     } else {
-      res.send("Email already exists. Status code: 400");
+      res.send("Error: Email already exists");
     }
   }
 });
