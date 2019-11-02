@@ -83,13 +83,10 @@ app.get("/u/:shortURL", (req, res) => {
     const longURL = urlObject.longURL;
 
     //Adds current user to unique visitors cookie
-    //TODO:
-
     if (!uniqueUserVisitsArray.includes(user)) {
       console.log(`Adding unique visitor to  ${shortURL}`);
       uniqueUserVisitsArray.push(user);
     }
-    console.log(session);
 
     //Increments visits counter by 1
     urlObject.visits = urlObject.visits + 1;
@@ -102,9 +99,11 @@ app.get("/u/:shortURL", (req, res) => {
 
 //Directs to URL page if correct user, error message if otherwise
 app.get('/urls/:shortURL', (req, res) => {
-  const user = req.session["userId"];
+  const session = req.session;
+  const user = session["userId"];
   const shortURL = req.params.shortURL;
   const urlObject = urlDatabase[shortURL];
+
 
   //Checks whether or not user is logged in, before going to url page.
   if (!user) {
@@ -113,11 +112,14 @@ app.get('/urls/:shortURL', (req, res) => {
     if (urlObject) {
       //Checks url belongs to current user
       if (urlObject.userID === user) {
+        const uniqueUserVisits = session[shortURL].length;
         let templateVars = {
           user: userDatabase[user],
           shortURL: shortURL,
           longURL: urlObject.longURL,
-          visits: urlObject.visits
+          visits: urlObject.visits,
+          uniqueUserVisits: uniqueUserVisits
+
         };
 
         res.render("urls_show", templateVars);
