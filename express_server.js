@@ -9,6 +9,7 @@ const app = express();
 const data = require("./data");
 const userDatabase = data.userDatabase;
 const urlDatabase = data.urlDatabase;
+const date = new Date();
 
 //Sets all middleware-----------------------------------------------------
 app.set("view engine", "ejs");
@@ -78,13 +79,13 @@ app.get("/u/:shortURL", (req, res) => {
   const session = req.session;
   const user = session["userId"];
   const uniqueUserVisitsArray = session[shortURL];
+  const timeStamp = utility.getTimeStamp();
 
   if (urlObject) {
     const longURL = urlObject.longURL;
 
     //Adds current user to unique visitors cookie
-    if (!uniqueUserVisitsArray.includes(user)) {
-      console.log(`Adding unique visitor to  ${shortURL}`);
+    if (!uniqueUserVisitsArray.includes(user) && user) {
       uniqueUserVisitsArray.push(user);
     }
 

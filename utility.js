@@ -88,11 +88,22 @@ const checkUser = function(userDatabase, userId) {
   return true;
 };
 
+const getTimeStamp = function() {
+  let today = new Date();
+  let date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+  let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  let dateTime = date + ' ' + time;
+  return dateTime;
+};
+
+console.log(getTimeStamp());
+
 module.exports = {
   generateRandomString,
   generateRandomID,
   isExistingUser,
   getUserByEmail,
   getUrlsForUser,
-  checkUser
+  checkUser,
+  getTimeStamp
 };
